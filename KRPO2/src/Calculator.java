@@ -109,7 +109,7 @@ public class Calculator {
                         }
                         if (peekTempStack.equals("-")) {//в стеке - более низкий
                             tempStack.push(valueSymbol);
-                        } else if (peekTempStack.equals("+")) { // равный
+                        } else if (peekTempStack.equals("+")) { //равный
                             noHigherPriority(valueSymbol, tempStack, postfix);
                         }
                         else { // (
