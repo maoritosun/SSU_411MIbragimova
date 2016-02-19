@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -8,12 +9,12 @@ import java.util.Stack;
 public class Calculator {
 
     static void noHigherPriority(String t, Stack temp, Stack postfix) {
-        String t1 = temp.peek().toString();
-        if(t1.equals("(")) {
+        String peekTemp = temp.peek().toString();
+        if(peekTemp.equals("(")) {
             temp.push(t);
         }
         else {
-            postfix.push(t1);
+            postfix.push(peekTemp);
             temp.pop();
             temp.push(t);
         }
@@ -31,15 +32,15 @@ public class Calculator {
 
     static double calculate(Stack<String> st) {
         double finalResult = 0;
-        String t;
+        String symbol;
         double operand1, operand2 ,result1 = 0.0, result2;
         Stack<Double> tempStack = new Stack<Double>();
         while(!st.isEmpty()){
-            t = st.pop();
-            if(t.equals("+") || t.equals("-") || t.equals("*") || t.equals("/") || t.equals("^")){
+            symbol = st.pop();
+            if(symbol.equals("+") || symbol.equals("-") || symbol.equals("*") || symbol.equals("/") || symbol.equals("^")){
                 operand1 = tempStack.pop();
                 operand2 = tempStack.pop();
-                switch (t) {
+                switch (symbol) {
                     case "+": {
                         result1 = operand2 + operand1;
                         break;
@@ -64,7 +65,7 @@ public class Calculator {
                 tempStack.push(result1);
             }
             else {//число
-                result2 = Double.valueOf(t);
+                result2 = Double.valueOf(symbol);
                 tempStack.push(result2);
             }
         }
@@ -148,35 +149,43 @@ public class Calculator {
     }
 
     public static void main(String[] args) {
-        Stack st;
+        Stack<String> st;
         Scanner sc = new Scanner(System.in);
-        String[] alphabet = {"+", "-", "*","/","^","(",")","1","2","3","4","5","6","7","8","9","0"};
-        int marker1;
-        String[] exp = new String[0];
+        String alphabet = "+-*/^.()1234567890";
+
+        boolean flag;
+
+        String[] exp;
         loop: do {
             System.out.println("Input expression: ");
             String expt = sc.nextLine();
-
             if(expt.trim().equals("close")) {
                 break;
             }
-
             exp = expt.split(" ");
-            for (int i = 0; i < exp.length; i++) {
-                marker1 = 0;
-                for (int j = 0; j < alphabet.length; j++) {
-                    if (exp[i].equals(alphabet[j])) {
-                        marker1 = 1;
+
+            for (String anExp : exp) {
+                flag = false;
+
+                if (alphabet.contains(anExp) && anExp.length() == 1) {// один разряд
+                    flag = true;
+                } else if (anExp.length() > 1) {// больше одного
+                    for (char chr : anExp.toCharArray()) {
+                        if (alphabet.contains(String.valueOf(chr))) {
+                            flag = true;
+                            break;
+                        }
                     }
                 }
-                if (marker1 == 0) {
+
+                if (!flag) {
                     System.out.println("Wrong expression!");
                     continue loop;
                 }
             }
 
             st = postfix(exp);
-            st = reverseStack(st);
+            Collections.reverse(st);
             System.out.println("Result: ");
             double res;
             res = calculate(st);
